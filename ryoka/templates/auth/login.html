@@ -1,18 +1,22 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 
-{% block title %}Flasky - Login{% endblock %}
+{% block title %}Ryoka - Предъявление{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
-    <h1>Login</h1>
+    <h1>Предъявить пропуск</h1>
 </div>
-<div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
 </div>
-<p>New user?
-    <a href="{{ url_for('auth.register') }}">
-        Click here to register
-    </a>
-</p>
+<div class="row">
+    <p>Отсутствует пропуск?
+        <a href="{{ url_for('auth.register') }}">
+            Обратитесь к начальнику.
+        </a>
+    </p>
+</div>
 {% endblock %}
