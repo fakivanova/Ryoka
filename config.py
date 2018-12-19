@@ -11,6 +11,8 @@ class Config:
     FLASKY_MAIL_SENDER = 'Flasky Admin'
     FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
 
+    UDBSESSIONS_DB_PATH = os.path.join(basedir, 'user_udbs')
+
     @staticmethod
     def init_app(app):
         pass
@@ -39,5 +41,6 @@ config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
 
+    'production': DevelopmentConfig,
     'default': DevelopmentConfig
 }

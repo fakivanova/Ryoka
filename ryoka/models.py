@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from . import db, login_manager
+from sqlalchemy import inspect
+from . import db, login_manager, udb_sessions, udbmodels
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -20,6 +21,32 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def session(self):
+        if self.id is None:
+            return None
+        return udb_sessions[self.id]
+
+    @property
+    def is_udb_initialized(self):
+        if hasattr(self, '_is_udb_initialized'):
+            return self._is_udb_initialized
+        if self.id is None:
+            return False
+        session = udb_sessions[self.id]
+        required_tables = set(udbmodels.Base.metadata.tables.keys())
+        existed_tables = set(inspect(session.get_bind()).get_table_names())
+        self._is_udb_initialized = (required_tables == existed_tables)
+        return self._is_udb_initialized
+
+
+    @property
+    def number_of_diseases(self):
+        if self.id is None or not self.is_udb_initialized:
+            return None
+        session = udb_sessions[self.id]
+        return session.query(udbmodels.Diseas).count()
 
     def __repr__(self):
         return '<User %r>' % self.username
