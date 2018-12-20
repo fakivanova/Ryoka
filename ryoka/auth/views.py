@@ -4,6 +4,7 @@ from . import auth
 from .. import db
 from .forms import LoginForm, RegistrationForm
 from ..models import User
+from ..udbmodels import Base
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -32,6 +33,8 @@ def register():
                     password=form.password.data)
         db.session.add(user)
         db.session.commit()
+        udb_session = user.session
+        Base.metadata.create_all(udb_session.get_bind())
         flash('Теперь можете предъявить пропуск.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)

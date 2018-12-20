@@ -13,12 +13,13 @@ class UdbEntry(db.Model):
 
 @udb_sessions.history_handler
 def newUdbEntry(entry_text):
-    if not current_user:
+    if not current_user or not current_user.is_authenticated:
         return
     current_user.udb_entries.append(UdbEntry(entry=entry_text))
     db.session.commit()
 
-class User(UserMixin, db.Model):
+#class User(UserMixin, db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
