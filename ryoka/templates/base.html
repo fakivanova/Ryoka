@@ -3,6 +3,26 @@
 {% block styles %}
 {{ super() }}
 <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+<style>
+#udb_history {
+    position: absolute;
+    z-index: 9;
+}
+
+#udb_history_header {
+    cursor: move;
+    z-index: 10;
+    background-color: #505050;
+    text-align: center;
+}
+#udb_history_scroll {
+    height:420px;
+    width:526px;
+    border:1px solid #ccc;
+    font:16px/26px Georgia, Garamond, Serif;
+    overflow:auto;
+}
+</style>
 {% endblock %}
 
 {% block head %}
@@ -14,6 +34,24 @@
 {{ super() }}
 {{ moment.include_moment() }}
 {{ moment.lang('ru') }}
+<script src="{{ url_for('static', filename='udb_history_drag.js') }}"></script>
+<script src="{{ url_for('static', filename='updateScrollWidget.js') }}"></script>
+<script>
+{% if current_user.is_authenticated %}
+    setInterval(updateHistoryInterval, 1000)
+    function updateHistoryInterval()
+    {
+        $.get("{{ url_for('udb.history') }}", updateHistory)
+
+    }
+    function updateHistory(data, status)
+    {
+        if (status != 'success') { return }
+        //console.log(data)
+        updateScrollWidget(data)
+    }
+{% endif %}
+</script>
 {% endblock %}
 
 {% block title %}Ryoka{% endblock %}
@@ -60,4 +98,10 @@
 
     {% block page_content %}{% endblock %}
 </div>
+{% if current_user.is_authenticated %}
+<div id="udb_history" class="panel panel-default">
+    <div id="udb_history_header" class="panel-heading">Click here to move</div>   
+    <div id="udb_history_scroll" class="panel-body"></div>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Web Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<style>
+#mydiv {
+  position: absolute;
+  z-index: 9;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 1px solid #d3d3d3;
+}
+
+#mydivheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #2196F3;
+  color: #fff;
+}
+</style>
+<body>
+
+<input id="firstspace" />
+
+<input type="button" value="Enter" onClick="update()" />
+
+
+<div id="mydiv">
+<!--HERE ARE THE SIZES-->
+    <div id="mydivheader">Click here to move</div>   
+    <div id="scroll" style="height:120px;width:526px;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
+
+            <li class="list-group-item">New </li>
+            <li class="list-group-item">Deleted </li>
+            <li class="list-group-item">Warnings </li>
+
+        </div>
+</div>
+
+
+<script src=drag.js></script>
+
+<script src=scroll.js></script>
+
+</body>
+</html>

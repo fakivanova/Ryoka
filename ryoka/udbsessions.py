@@ -1,10 +1,15 @@
 import os
-from flask import current_app, _app_ctx_stack as stack
-from sqlalchemy import create_engine
+from flask import current_app, g, _app_ctx_stack as stack
+from flask_login import current_user
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 class UdbSessions:
+    def __init__(self):
+        self._history_handler = None
+
     def init_app(self, app):
+        app.udb_session = self
         app.config.setdefault('UDBSESSIONS_DB_PATH', ':memory:')
         app.teardown_appcontext(self.teardown)
     
@@ -13,6 +18,10 @@ class UdbSessions:
         if hasattr(ctx, 'udb_sessions'):
             ctx.udb_sessions.teardown()
 
+    def history_handler(self, handler):
+        self._history_handler = handler
+        return handler
+
     def __getitem__(self, index):
         ctx = stack.top
         if ctx is not None:
@@ -20,7 +29,6 @@ class UdbSessions:
                 ctx.udb_sessions = UdbSessionsImpl()
             return ctx.udb_sessions[index]
         return None
-
 
 class UdbSessionsImpl:
     def __init__(self):
@@ -31,10 +39,15 @@ class UdbSessionsImpl:
             self.new_session(index)
         return self.sessions[index]
 
+    def new_engine(self, index):
+        path = 'sqlite:///%s' % os.path.join(current_app.config['UDBSESSIONS_DB_PATH'], str(index) + '.sqlite')
+        engine = create_engine(path, echo=False)
+        event.listen(engine, 'after_cursor_execute', after_cursor_execute)
+        return engine
+
     def new_session(self, index):
         print('!!! ---- New session!')
-        path = 'sqlite:///%s' % os.path.join(current_app.config['UDBSESSIONS_DB_PATH'], str(index) + '.sqlite')
-        engine = create_engine(path, echo=True)
+        engine = self.new_engine(index)
         Session =  sessionmaker(bind=engine)
         self.sessions[index] = Session()
 
@@ -42,4 +55,13 @@ class UdbSessionsImpl:
         print('!!! ---- Tear down appcontex!')
         for session in self.sessions.values():
             session.close()
+            #event.remove(session.get_bind(), 'after_cursor_execute', after_cursor_execute)
         del self.sessions
+
+def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    if not current_app:
+        return
+    handler = current_app.udb_session._history_handler
+    if handler:
+        handler(statement + str(parameters))
+    print('!!!!!', statement, parameters)

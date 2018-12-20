@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class Diseas(Base):
+class Disease(Base):
     __tablename__ = 'diseases'
 
     id = Column(Integer, primary_key = True)
