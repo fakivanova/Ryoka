@@ -34,10 +34,10 @@
 {{ super() }}
 {{ moment.include_moment() }}
 {{ moment.lang('ru') }}
+{% if current_user.is_authenticated %}
 <script src="{{ url_for('static', filename='udb_history_drag.js') }}"></script>
 <script src="{{ url_for('static', filename='updateScrollWidget.js') }}"></script>
 <script>
-{% if current_user.is_authenticated %}
     setInterval(updateHistoryInterval, 1000)
     function updateHistoryInterval()
     {
@@ -75,6 +75,7 @@
                 {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('udb.equipments') }}">Аппаратура</a></li>
                 <li><a href="{{ url_for('udb.diseases') }}">Заболевания</a></li>
+                <li><a href="{{ url_for('udb.employees') }}">Сотрудники</a></li>
                 {% endif %}
             </ul>
             <ul class="nav navbar-nav navbar-right">

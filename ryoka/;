@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Сотрудники:</h1>
+</div>
+<div class="row">
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Номер</th>
+                    <th>ФИО</th>
+                    <th>Стаж</th>
+                    <th>Учёная степень</th>
+                    <th>Аппаратура</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.experience }}</td>
+                    <td>{{ employee.degree.name }}</td>
+                    <td>{{ [equipment.name for equipment in employee.equipments]|join(', '  }}</td> 
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+    </div>
+    <div class="col-md-4">
+        {{ wtf.quick_form(employeeEquipmentForm) }}
+    </div>
+</div>
+
+{% endblock %}

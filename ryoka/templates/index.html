@@ -10,10 +10,11 @@
     {% endif %}
 </div>
 
+{% if current_user.is_authenticated %}
 <h3>В базе данных:</h3>
 <ul>
     <li>Болезней - {{ current_user.number_of_diseases }}</li>
 </ul>
+{% endif %}
 
-<hr>
 {% endblock %}

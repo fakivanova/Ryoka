@@ -23,10 +23,8 @@ function removeChildren(dom)
         dom.removeChild(dom.firstChild)
     }
 }	
-function updateScrollWidget(new_entries)
+function recreateScrollChildrens(list)
 {
-    var list = store(new_entries);
-    
     removeChildren(scroll_widget)
     for (var i = 0; i < list.length; ++i)
     {
@@ -35,10 +33,14 @@ function updateScrollWidget(new_entries)
         entry.classList.add('list-group-item')
         scroll_widget.appendChild(entry)
     }        
+    scroll_widget.scrollTop = scroll_widget.scrollHeight;
+}
+function updateScrollWidget(new_entries)
+{
     if (new_entries.length != 0)
     {
-        scroll_widget.scrollTop = scroll_widget.scrollHeight;
+        var list = store(new_entries);
+        recreateScrollChildrens(list)
     }
 }
-updateScrollWidget([])
-scroll_widget.scrollTop = scroll_widget.scrollHeight;
+recreateScrollChildrens(store([]))

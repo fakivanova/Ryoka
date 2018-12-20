@@ -5,6 +5,7 @@ from .. import db
 from .forms import LoginForm, RegistrationForm
 from ..models import User
 from ..udbmodels import Base, Degree
+from sqlalchemy import inspect
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -13,6 +14,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is not None and user.verify_password(form.password.data):
             login_user(user)
+            initialize_udb(user.session)
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('Неверный позывной или секретное слово!')
     return render_template('auth/login.html', form=form)
@@ -33,14 +35,18 @@ def register():
                     password=form.password.data)
         db.session.add(user)
         db.session.commit()
-        initialize_udb(udb_session)
+        #initialize_udb(user.session)
         flash('Теперь можете предъявить пропуск.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
-def initialize_udb(udb_session):
-    Base.metadata.create_all(udb_session.get_bind())
-    db.session.add_all([Degree(name='Кандидат наук'),
-                        Degree(name='Доктор наук')])
-    db.session.commit()
 
+def initialize_udb(udb_session):
+    inspector = inspect(udb_session.get_bind())
+    existed_table_names = set(inspector.get_table_names())
+    expected_table_names = set(Base.metadata.tables.keys())
+    if existed_table_names != expected_table_names:
+        Base.metadata.create_all(udb_session.get_bind())
+        udb_session.add_all([Degree(name='Кандидат наук'),
+                             Degree(name='Доктор наук')])
+        udb_session.commit()
