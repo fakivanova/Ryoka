@@ -6,19 +6,14 @@
     {% if current_user.is_authenticated %}
     <h1>Здравия желаю, товарищ {{ current_user.rank|lower }}!</h1>
     {% else %}
-    <h1><a href="{{ url_for('auth.login') }}">Представьтесь</a> пожалуйста!</h1>
+    <h1><a href="{{ url_for('auth.login') }}">Представьтесь,</a> пожалуйста!</h1>
     {% endif %}
 </div>
 
-{% if not current_user.is_udb_initialized %}
-<p>База данных ещё не проинциализирвоана.
-Вы можете сделать это <a href="{{ url_for('udb.create_all') }}">здесь</a></p>
-{% else %}
 <h3>В базе данных:</h3>
 <ul>
     <li>Болезней - {{ current_user.number_of_diseases }}</li>
 </ul>
-{% endif %}
 
 <hr>
 {% endblock %}

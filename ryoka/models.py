@@ -46,21 +46,8 @@ class User(db.Model, UserMixin):
         return udb_sessions[self.id]
 
     @property
-    def is_udb_initialized(self):
-        if hasattr(self, '_is_udb_initialized'):
-            return self._is_udb_initialized
-        if self.id is None:
-            return False
-        session = udb_sessions[self.id]
-        required_tables = set(udbmodels.Base.metadata.tables.keys())
-        existed_tables = set(inspect(session.get_bind()).get_table_names())
-        self._is_udb_initialized = (required_tables == existed_tables)
-        return self._is_udb_initialized
-
-
-    @property
     def number_of_diseases(self):
-        if self.id is None or not self.is_udb_initialized:
+        if self.id is None:
             return None
         session = udb_sessions[self.id]
         return session.query(udbmodels.Disease).count()
